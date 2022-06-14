@@ -1,0 +1,7 @@
+FROM nginx
+RUN apt update
+RUN apt install vim -y
+EXPOSE 80
+WORKDIR /usr/share/nginx/html
+COPY html/index.html .
+RUN echo "echoed" >> ./index.html
