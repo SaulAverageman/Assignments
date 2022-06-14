@@ -11,18 +11,18 @@
         state: present
     - name: download maven
       shell: |
-        wget -O /home/ec2-user/apache-maven-3.8.5-bin.tar.gz https://dlcdn.apache.org/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz
-        tar -xvf /home/ec2-user/apache-maven-3.8.5-bin.tar.gz
+        wget -O /home/ec2-user/apache-maven-3.8.6-bin.tar.gz https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
+        tar -xvdf /home/ec2-user/apache-maven-3.8.6-bin.tar.gz
     - name: maven in /opt conditional
       stat:
-        path: /opt/apache-maven-3.8.5
+        path: /opt/apache-maven-3.8.6
       register: maveninopt
     - name: move maven to opt
-      shell: mv /home/ec2-user/apache-maven-3.8.5 /opt/
+      shell: mv /home/ec2-user/apache-maven-3.8.6 /opt/
       when: not maveninopt.stat.exists
     - name: symlink to maven
       file:
-        src: /opt/apache-maven-3.8.5
+        src: /opt/apache-maven-3.8.6
         dest: /opt/maven
         state: link
     - name: copy maven.sh from local to remote
