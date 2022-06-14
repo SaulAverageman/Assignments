@@ -1,0 +1,80 @@
+---
+- hosts: mavenserver
+  become: yes
+  tasks:
+    - name: install java-1.8.0 and java-devel
+      yum:
+        name:
+        - java-1.8.0-openjdk
+        - java-devel
+        - git
+        state: present
+    - name: download maven
+      shell: |
+        wget -O /home/ec2-user/apache-maven-3.8.5-bin.tar.gz https://dlcdn.apache.org/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz
+        tar -xvf /home/ec2-user/apache-maven-3.8.5-bin.tar.gz
+    - name: maven in /opt conditional
+      stat:
+        path: /opt/apache-maven-3.8.5
+      register: maveninopt
+    - name: move maven to opt
+      shell: mv /home/ec2-user/apache-maven-3.8.5 /opt/
+      when: not maveninopt.stat.exists
+    - name: symlink to maven
+      file:
+        src: /opt/apache-maven-3.8.5
+        dest: /opt/maven
+        state: link
+    - name: copy maven.sh from local to remote
+      copy:
+        src: maven.sh
+        dest: /etc/profile.d/
+    - name: giving execute permission to maven.sh
+      file:
+        path: /etc/profile.d/maven.sh
+        mode: '0711'
+    - name: running maven.sh
+      shell: bash /etc/profile.d/maven.sh
+    - name: download jenkins
+      shell: |
+        wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+    - name: install jenkins
+      yum:
+        name: jenkins
+        state: present
+    - name: start jenkins
+      systemd:
+        name: jenkins
+        state:  started
+- hosts: tomcatserver
+  become: yes
+  tasks:
+  - name: install java-1.8.0 and java-devel
+    yum:
+      name:
+      - java-1.8.0-openjdk
+      - java-devel
+      state: present
+  - name: check if <>/apps is present
+    stat:
+      path: /home/ec2-user/apps
+    register: appspresent
+  - name: make apps dir
+    shell: mkdir /home/ec2-user/apps
+    when: not appspresent.stat.exists
+  - name: download tomcat in /home/ec2-user/apps
+    shell: |
+      wget https://mirrors.estointernet.in/apache/tomcat/tomcat-10/v10.0.20/bin/apache-tomcat-10.0.20.tar.gz
+      tar -xvf apache-tomcat-10.0.20.tar.gz
+      mv apache-tomcat-10.0.20 /home/ec2-user/apps
+  - name: symlink of tomcat to <>/apps
+    file:
+      src: /home/ec2-user/apps/apache-tomcat-10.0.20
+      path: /home/ec2-user/apps/tomact
+      state: link
+  - name: export CATALINA_HOME
+    shell: |
+      export CATALINA_HOME=/home/ec2-user/apps/tomact
+      echo "export CATALINA_HOME=/home/ec2-user/apps/tomact" >> ~/.bashrc
+      sh /home/ec2-user/apps/tomcat/bin/startup.sh
