@@ -47,6 +47,7 @@
       systemd:
         name: jenkins
         state:  started
+
 - hosts: tomcatserver
   become: yes
   tasks:
@@ -65,16 +66,17 @@
     when: not appspresent.stat.exists
   - name: download tomcat in /home/ec2-user/apps
     shell: |
+      rm -rf /home/ec2-user/apps/
       wget https://mirrors.estointernet.in/apache/tomcat/tomcat-10/v10.0.20/bin/apache-tomcat-10.0.20.tar.gz
-      tar -xvf apache-tomcat-10.0.20.tar.gz
+      tar -xvzf apache-tomcat-10.0.20.tar.gz
       mv apache-tomcat-10.0.20 /home/ec2-user/apps
   - name: symlink of tomcat to <>/apps
     file:
-      src: /home/ec2-user/apps/apache-tomcat-10.0.20
-      path: /home/ec2-user/apps/tomact
+      src: /home/ec2-user/apps
+      path: /home/ec2-user/apps/tomcat
       state: link
   - name: export CATALINA_HOME
     shell: |
-      export CATALINA_HOME=/home/ec2-user/apps/tomact
-      echo "export CATALINA_HOME=/home/ec2-user/apps/tomact" >> ~/.bashrc
+      export CATALINA_HOME=/home/ec2-user/apps/tomcat
+      echo "export CATALINA_HOME=/home/ec2-user/apps/tomcat" >> ~/.bashrc
       sh /home/ec2-user/apps/tomcat/bin/startup.sh
