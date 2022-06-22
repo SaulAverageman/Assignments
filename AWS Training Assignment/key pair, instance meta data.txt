@@ -1,0 +1,23 @@
+Instance metadata
+-----------------
+1) Instance metadata is data about the instance which can be used to manage and configure the instance.
+2) It can be used to access user data to create instances from custom AMIs
+3) It is divided into categories like hostname, security groups etc.
+4) These can be accessed only from inside an instance, however its not encrypted.
+5) To access the metadata we can use http://169.254.169.254/latest/meta-data/ url
+
+Key-Pair
+--------
+1) It consists of private and public key, which allows us to prove our identity while connecting to EC2 isntances.
+2) Public key is stored on the instance itself, while the user stores the private key.
+3) For Linux instances, the private key allows us to SSH into the instance using 3rd party clients.
+4) For Windows instances, the private key allows us to get admin password which can be used to login into the windows.
+5) Private can be used by anyone to access the instance, so it is important to keep it secure.
+
+Elastic IP
+----------
+1) It is allocated by an AWS user, who owns it till the time it is released by them.
+2) It is a static IPv4 address which is accessible through internet.
+3) This IP can be allocated to any AWS componet which requires and IP.
+4) It is generally used for error handling, ie, quickly allocating the same IP to a new instance if the older instance fails.
+5) These IPs are zone specific ie they cannot be moved to another zone.

@@ -1,0 +1,66 @@
+    AMAZON LINUX 2 MACHINE
+    ==============================================================
+    1  sudo yum update
+    2  sudo yum install java-1.8.0-openjdk
+    3  sudo yum install java-devel
+    4  mkdir jar-app
+    5  cd jar-app/
+
+    7  sudp vi bye.java
+       --------------------------------------------------------
+       class bye{
+             public static void main(String[] args){
+                   System.out.println("Shutting down. Bye!!");
+             }
+       }
+       --------------------------------------------------------		
+    9  sudo vi manifest.txt 
+       ------------------------------------------
+       Manifest-Version: 1.0
+       Created-By: Me
+       Main-Class: bye
+       ------------------------------------------
+   10  javac bye.java   
+   12  jar cfm bye.jar manifest.txt bye.class
+
+   15  java -jar bye.jar
+   16  sudo vi dockerfile
+       -------------------------
+       FROM java:8 
+       WORKDIR /
+       ADD bye.jar bye.jar 
+       CMD java -jar bye.jar
+       --------------------------
+   17  sudo yum install docker -y
+   18  sudo usermod -aG docker ec2-user
+   21  sudo systemctl start enable docker
+   22  sudo reboot
+   
+   46  docker build .
+   
+   54  docker images #select appropriate image ID
+   57  docker image tag a94c842 bubai8tle/java-basic:1.0
+
+   64  docker login -u <username> -p <password>
+   65  docker push bubai8tle/java-basic:1.0
+============================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+============================================================================
+
+UBUNTU MACHINE
+=====================
+   29  sudo apt-get update
+   30  sudo apt-get remove docker docker-engine docker.io
+   31  sudo apt-get update
+   32  sudo apt install docker.io
+   33  sudo snap install docker
+   35  sudo usermod -aG docker ubuntu 
+   
+   36  docker login -u <username> -p <password>
+   37  docker image pull bubai8tle/java-basic:1.0
+   
+   39  docker images
+   40  sudo docker images
+   41  docker run -d bubai8tle/java-basic:1.0
+
+
